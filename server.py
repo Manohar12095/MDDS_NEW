@@ -45,8 +45,11 @@ def load_pickle_model(filename):
     return _model_cache[filename]
 
 def load_brain_model():
-    if "brain" not in _model_cache:
+    try:
         from tensorflow.keras.models import load_model as keras_load
+    except ImportError:
+        raise RuntimeError("TensorFlow is not installed in this environment.")
+    if "brain" not in _model_cache:
         path = ensure_file("brain_tumor_dataset.h5")
         _model_cache["brain"] = keras_load(path)
     return _model_cache["brain"]
@@ -110,6 +113,9 @@ def predict_brain():
     try:
         from PIL import Image
         model = load_brain_model()
+    except RuntimeError as e:
+        return jsonify({"error": "Brain Tumor detection is unavailable in this deployment (TensorFlow not installed). All other disease predictions work normally.", "unavailable": True}), 503
+    try:
         file = request.files.get("image")
         if not file:
             return jsonify({"error": "No image uploaded"}), 400

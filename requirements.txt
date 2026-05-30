@@ -1,7 +1,6 @@
 flask
 numpy
 scikit-learn
-tensorflow-cpu
 Pillow
 fpdf2
 gdown
