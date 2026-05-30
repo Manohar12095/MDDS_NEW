@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% block title %}AI Health Chatbot — MDDS{% endblock %}
+{% block desc %}Conversational AI health screening assistant — offline and private.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#6366F1; --secondary:#8B5CF6; --glow:rgba(99,102,241,0.3); }
+.btn-primary { background:linear-gradient(135deg,#6366F1,#8B5CF6); box-shadow:0 6px 24px rgba(99,102,241,0.35); }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge" style="border-color:rgba(99,102,241,0.35);color:#6366F1;background:rgba(99,102,241,0.08);">🤖 Conversational Screening</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#6366F1,#8B5CF6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">AI Health Assistant</h1>
+  <p>Rule-based conversational medical screening — offline &amp; private</p>
+</div>
+
+<div class="chat-container" style="max-width:860px;margin:0 auto;padding:0 24px 48px;">
+  <!-- Quick chips -->
+  <div class="quick-chips" id="quick-chips">
+    <span class="chip" onclick="sendMsg('I want to check for diabetes')">🩸 Diabetes</span>
+    <span class="chip" onclick="sendMsg('I want to check my heart health')">❤️ Heart Disease</span>
+    <span class="chip" onclick="sendMsg('I want to check for brain tumor')">🧠 Brain Tumor</span>
+    <span class="chip" onclick="sendMsg('I want to check my kidney health')">🫘 Kidney Health</span>
+    <span class="chip" onclick="sendMsg('I want to check my liver health')">🟠 Liver Health</span>
+    <span class="chip" onclick="clearChat()" style="border-color:rgba(239,68,68,0.35);background:rgba(239,68,68,0.08);color:#f87171;">🗑️ Clear</span>
+  </div>
+
+  <!-- Messages -->
+  <div class="glass-card" style="padding:16px;margin-top:12px;">
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Type your message here… 💬" onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="btn btn-primary" onclick="sendMsg()" style="padding:12px 20px;white-space:nowrap;">Send ✈️</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Rule-based chatbot logic (ported from AI_Chatbot.py) ──────────────────
+const FLOWS = {
+  diabetes: {
+    title:'🩸 Diabetes Check',
+    questions:[
+      ['age','How old are you? (years)'],
+      ['gender','What is your gender? (Male / Female)'],
+      ['glucose','Fasting glucose level? (mg/dL, e.g. 95)'],
+      ['bp','Blood pressure? (systolic, e.g. 120)'],
+      ['insulin','Insulin level? (µU/mL, e.g. 80) — type 0 if unknown'],
+      ['bmi','BMI? (e.g. 25.4) — type 0 if unknown'],
+      ['family','Family history of diabetes? (Yes / No)'],
+      ['symptoms','Frequent urination, thirst or fatigue? (Yes / No)'],
+    ],
+    specialist:['Diabetologist','diabetologist+near+me'],
+    hospital:'diabetes+hospital+near+me',
+  },
+  heart: {
+    title:'❤️ Heart Disease Check',
+    questions:[
+      ['age','How old are you?'],
+      ['gender','Gender? (Male / Female)'],
+      ['cp','Chest pain? (None / Mild / Moderate / Severe)'],
+      ['bp','Resting blood pressure? (e.g. 130)'],
+      ['chol','Cholesterol level? (mg/dL) — type 0 if unknown'],
+      ['heart_rate','Resting heart rate? (bpm, e.g. 75)'],
+      ['smoking','Do you smoke? (Yes / No)'],
+      ['exercise','Exercise regularly? (Yes / No)'],
+    ],
+    specialist:['Cardiologist','cardiologist+near+me'],
+    hospital:'cardiology+hospital+near+me',
+  },
+  brain: {
+    title:'🧠 Brain Tumor Check',
+    questions:[
+      ['headache','Frequent severe headaches? (Yes / No)'],
+      ['vision','Vision problems or blurred sight? (Yes / No)'],
+      ['seizure','Any seizures? (Yes / No)'],
+      ['nausea','Nausea or vomiting without cause? (Yes / No)'],
+      ['memory','Memory loss or confusion? (Yes / No)'],
+    ],
+    specialist:['Neurologist','neurologist+near+me'],
+    hospital:'neurology+hospital+near+me',
+  },
+  kidney: {
+    title:'🫘 Kidney Health Check',
+    questions:[
+      ['age','How old are you?'],
+      ['bp','Blood pressure? (e.g. 130)'],
+      ['creatinine','Serum creatinine? (mg/dL) — type 0 if unknown'],
+      ['urea','Blood urea level? (mg/dL) — type 0 if unknown'],
+      ['diabetes','Do you have diabetes? (Yes / No)'],
+      ['swelling','Swelling in legs or feet? (Yes / No)'],
+      ['urine','Abnormal urine (foamy/blood/reduced)? (Yes / No)'],
+    ],
+    specialist:['Nephrologist','nephrologist+near+me'],
+    hospital:'nephrology+hospital+near+me',
+  },
+  liver: {
+    title:'🟠 Liver Health Check',
+    questions:[
+      ['age','How old are you?'],
+      ['gender','Gender? (Male / Female)'],
+      ['bilirubin','Total bilirubin? (mg/dL) — type 0 if unknown'],
+      ['sgpt','SGPT/ALT level? (U/L) — type 0 if unknown'],
+      ['alcohol','Alcohol consumption? (None / Occasional / Heavy)'],
+      ['fatigue','Persistent fatigue? (Yes / No)'],
+      ['abdomen','Abdominal pain or jaundice? (Yes / No)'],
+    ],
+    specialist:['Hepatologist','hepatologist+near+me'],
+    hospital:'liver+hospital+near+me',
+  },
+};
+
+const TRIGGERS = {
+  diabetes:['diabetes','sugar','glucose','insulin'],
+  heart:   ['heart','chest','cardio','cardiac'],
+  brain:   ['brain','tumor','mri','neuro','headache'],
+  kidney:  ['kidney','renal','creatinine','urea','nephr'],
+  liver:   ['liver','bilirubin','sgpt','sgot','hepat'],
+};
+const EMERGENCY_WORDS = ['severe chest pain','cant breathe',"can't breathe",'unconscious','stroke','heart attack','emergency','fainted','dying','no pulse'];
+const GREETING = `Hello 👋 **Welcome to the AI Health Assistant!**
+
+I can screen: 🩸 **Diabetes** | ❤️ **Heart Disease** | 🧠 **Brain Tumor** | 🫘 **Kidney** | 🟠 **Liver**
+
+✅ Generate PDF reports  ✅ Find nearby specialists
+
+Which health check would you like to start?`;
+
+let state = { topic:null, step:0, data:{}, done:false };
+
+// ── Assessors ──────────────────────────────────────────────────────────────
+function assessDiabetes(d) {
+  let s=0;
+  if(parseFloat(d.glucose||0)>140)s+=3; else if(parseFloat(d.glucose||0)>110)s+=1;
+  if(parseFloat(d.bmi||0)>30)s+=2;
+  if(parseFloat(d.bp||0)>140)s+=1;
+  if(parseFloat(d.insulin||0)>200)s+=1;
+  if((d.family||'').toLowerCase().includes('yes'))s+=2;
+  if((d.symptoms||'').toLowerCase().includes('yes'))s+=2;
+  return s>=4;
+}
+function assessHeart(d) {
+  let s=0;
+  if(parseFloat(d.chol||0)>240)s+=2;
+  if(parseFloat(d.bp||0)>140)s+=2;
+  const hr=parseFloat(d.heart_rate||75); if(hr<55||hr>100)s+=1;
+  if((d.smoking||'').toLowerCase().includes('yes'))s+=2;
+  if(['severe','moderate'].some(w=>(d.cp||'').toLowerCase().includes(w)))s+=3;
+  if((d.exercise||'').toLowerCase().includes('no'))s+=1;
+  return s>=4;
+}
+function assessBrain(d) {
+  return ['headache','vision','seizure','nausea','memory'].filter(k=>(d[k]||'').toLowerCase().includes('yes')).length>=3;
+}
+function assessKidney(d) {
+  let s=0;
+  if(parseFloat(d.creatinine||0)>1.4)s+=3;
+  if(parseFloat(d.urea||0)>50)s+=2;
+  if(parseFloat(d.bp||0)>140)s+=1;
+  if((d.diabetes||'').toLowerCase().includes('yes'))s+=2;
+  if((d.swelling||'').toLowerCase().includes('yes'))s+=2;
+  if((d.urine||'').toLowerCase().includes('yes'))s+=2;
+  return s>=4;
+}
+function assessLiver(d) {
+  let s=0;
+  if(parseFloat(d.bilirubin||0)>1.5)s+=3;
+  if(parseFloat(d.sgpt||0)>40)s+=2;
+  if((d.alcohol||'').toLowerCase().includes('heavy'))s+=3;
+  if((d.fatigue||'').toLowerCase().includes('yes'))s+=1;
+  if((d.abdomen||'').toLowerCase().includes('yes'))s+=2;
+  return s>=4;
+}
+const ASSESSORS={diabetes:assessDiabetes,heart:assessHeart,brain:assessBrain,kidney:assessKidney,liver:assessLiver};
+
+function buildResult(topic, isHigh) {
+  const names={diabetes:'Diabetes',heart:'Heart Disease',brain:'Brain Tumor Risk',kidney:'Kidney Disease',liver:'Liver Disease'};
+  const specs={...Object.fromEntries(Object.entries(FLOWS).map(([k,v])=>[k,v.specialist[0]]))};
+  const name=names[topic]||topic; const spec=specs[topic]||'Specialist';
+  if(isHigh) return `⚠️ **${name} — Elevated Risk Detected**\n\nBased on your answers, the AI screening suggests a **higher possibility** of this condition.\n\n🔴 Please do not panic. This is AI-assisted preliminary screening, not a final diagnosis.\n\n👨‍⚕️ **Recommended:** Consult a **${spec}** for proper clinical evaluation.\n\nType **'report'** for your PDF report or **'doctors'** for nearby specialists.`;
+  return `✅ **${name} — Low Risk Detected**\n\nYour indicators appear to be **within a normal range**.\n\n🟢 Keep maintaining a healthy lifestyle — balanced diet, regular exercise, and routine checkups!\n\nType **'report'** for your PDF or **'doctors'** to find specialists.`;
+}
+
+// ── Rendering ──────────────────────────────────────────────────────────────
+function addMsg(role, text) {
+  const container = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'chat-bubble ' + (role === 'user' ? 'user' : 'bot');
+  const avatar = `<div class="avatar ${role==='user'?'user-av':'bot'}">${role==='user'?'👤':'🤖'}</div>`;
+  const bubble = `<div class="bubble-text">${text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')}</div>`;
+  div.innerHTML = role==='user' ? bubble+avatar : avatar+bubble;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function detectTopic(text) {
+  const tl = text.toLowerCase();
+  for (const [topic, kws] of Object.entries(TRIGGERS)) {
+    if(kws.some(k=>tl.includes(k))) return topic;
+  }
+  return null;
+}
+function isEmergency(text) {
+  const tl = text.toLowerCase();
+  return EMERGENCY_WORDS.some(w=>tl.includes(w));
+}
+
+function nextQuestion() {
+  const qs = FLOWS[state.topic].questions;
+  if (state.step < qs.length) {
+    const [, q] = qs[state.step];
+    botSay(`**Question ${state.step+1}/${qs.length}:** ${q}`);
+  } else {
+    const isHigh = ASSESSORS[state.topic](state.data);
+    botSay(buildResult(state.topic, isHigh));
+    state.done = true;
+  }
+}
+function botSay(text) { addMsg('bot', text); }
+
+function handleUser(text) {
+  const tl = text.toLowerCase().trim();
+  if (isEmergency(text)) {
+    botSay('🚨 **EMERGENCY DETECTED**\n\nPlease **call emergency services immediately:**\n📞 **112** (India) | **911** (USA)\n\n🏥 Go to the nearest emergency hospital **right now**.\n\n[Find Emergency Hospital →](https://www.google.com/maps/search/emergency+hospital+near+me)');
+    return;
+  }
+  if (['report','pdf','download'].some(w=>tl.includes(w))) {
+    botSay('📄 Click the **Download PDF** button in the top area to get your report.');
+    return;
+  }
+  if (['doctor','hospital','nearby','find','map'].some(w=>tl.includes(w))) {
+    if(state.topic) {
+      const [spec,q]=FLOWS[state.topic].specialist; const hq=FLOWS[state.topic].hospital;
+      botSay(`🗺️ **Finding nearby ${spec}s & hospitals:**\n\n👨‍⚕️ [${spec} Near Me](https://www.google.com/maps/search/${q})\n🏥 [Hospitals Near Me](https://www.google.com/maps/search/${hq})`);
+    } else {
+      botSay('🗺️ [Find Hospitals Near Me](https://www.google.com/maps/search/hospital+near+me)');
+    }
+    return;
+  }
+  if (['restart','menu','start over','home','back'].some(w=>tl.includes(w))) {
+    state={topic:null,step:0,data:{},done:false};
+    botSay('🏠 **Back to main menu!**\n\n'+GREETING);
+    return;
+  }
+  const topic = detectTopic(text);
+  if (topic && !state.topic) {
+    state = {topic, step:0, data:{}, done:false};
+    botSay(`Great! Let's start the **${FLOWS[topic].title}** screening.\n\nI'll ask a few simple questions. Answer as accurately as possible.\n_(AI-assisted — not a final diagnosis.)_`);
+    nextQuestion();
+    return;
+  }
+  if (state.topic && !state.done) {
+    const qs = FLOWS[state.topic].questions;
+    if (state.step < qs.length) {
+      const [key] = qs[state.step];
+      state.data[key] = text;
+      state.step++;
+      nextQuestion();
+    }
+    return;
+  }
+  if (state.done) {
+    const newTopic = detectTopic(text);
+    if (newTopic) {
+      state = {topic:newTopic, step:0, data:{}, done:false};
+      botSay(`Starting **${FLOWS[newTopic].title}** screening now.`);
+      nextQuestion();
+    } else {
+      botSay('I can help with another check! Type:\n🩸 **Diabetes** | ❤️ **Heart** | 🧠 **Brain** | 🫘 **Kidney** | 🟠 **Liver**');
+    }
+    return;
+  }
+  botSay('Please choose a health check:\n\n🩸 **Diabetes** | ❤️ **Heart Disease** | 🧠 **Brain Tumor** | 🫘 **Kidney** | 🟠 **Liver**\n\nOr use the **Quick Start** chips above!');
+}
+
+function sendMsg(text) {
+  const input = document.getElementById('chat-input');
+  const msg = text || input.value.trim();
+  if (!msg) return;
+  addMsg('user', msg);
+  input.value = '';
+  setTimeout(() => handleUser(msg), 200);
+}
+
+function clearChat() {
+  state = {topic:null,step:0,data:{},done:false};
+  document.getElementById('chat-messages').innerHTML = '';
+  botSay(GREETING);
+}
+
+// Initial greeting
+document.addEventListener('DOMContentLoaded', () => botSay(GREETING));
+</script>
+{% endblock %}

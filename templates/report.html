@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+{% block title %}Report & Help — MDDS{% endblock %}
+{% block desc %}Download your personal AI health report with prediction history and find nearby hospitals.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#00D4FF; --secondary:#7B2FFF; --glow:rgba(0,212,255,0.3); }
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+@media(max-width:768px){ .report-grid{ grid-template-columns:1fr; } }
+
+.form-input {
+  width: 100%; padding: 11px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  color: #f1f5f9; font-size: 13px; font-family: 'Inter', sans-serif;
+  outline: none; transition: border-color 0.3s;
+}
+.form-input:focus { border-color: #00D4FF; box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
+.form-input::placeholder { color: #475569; }
+
+.history-entry {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  animation: fadeInUp 0.3s ease;
+}
+.history-entry.detected { border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.06); }
+.history-entry.safe     { border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.06); }
+
+.hospital-card {
+  padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
+  background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.18);
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeInUp 0.3s ease;
+}
+.hospital-card a {
+  padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  text-decoration: none; color: #fff;
+  background: linear-gradient(135deg,#00D4FF,#7B2FFF);
+  transition: transform 0.2s;
+}
+.hospital-card a:hover { transform: translateY(-2px); }
+
+.city-input-row {
+  display: flex; gap: 10px; margin-top: 16px;
+}
+.city-input-row input { flex:1; }
+
+/* Stat boxes */
+.stat-box {
+  background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 12px; padding: 16px; text-align: center; flex: 1;
+}
+.stat-val { font-size: 28px; font-weight: 800; color: #00D4FF; }
+.stat-lbl { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+.tab-btns { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn {
+  padding: 8px 18px; border-radius: 8px; font-size: 12px; font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.1); background: transparent;
+  color: #64748b; cursor: pointer; transition: all 0.2s;
+}
+.tab-btn.active { background: rgba(0,212,255,0.12); border-color: #00D4FF; color: #00D4FF; }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge">📄 Personal Health Report</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#00D4FF,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Report &amp; Help</h1>
+  <p>Download your complete AI health report and find hospitals near you</p>
+</div>
+
+<div class="report-grid">
+
+  <!-- LEFT: Personal Details + PDF Download -->
+  <div>
+    <div class="glass-card" style="margin-bottom:20px;">
+      <div class="section-header">
+        <span class="icon">👤</span><h3>Personal Details</h3>
+      </div>
+      <p style="font-size:12px;color:#64748b;margin-bottom:16px;">Fill in your details to personalise the PDF report.</p>
+
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="p-name" type="text" placeholder="e.g. Manohar Kumar">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Age</label>
+          <input class="form-input" id="p-age" type="number" min="0" max="120" placeholder="25">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select class="form-input" id="p-gender">
+            <option value="">Select…</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="form-group">
+          <label class="form-label">Blood Group</label>
+          <select class="form-input" id="p-blood">
+            <option value="">Select…</option>
+            <option>A+</option><option>A−</option>
+            <option>B+</option><option>B−</option>
+            <option>AB+</option><option>AB−</option>
+            <option>O+</option><option>O−</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input class="form-input" id="p-phone" type="tel" placeholder="+91 98765 43210">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <textarea class="form-input" id="p-address" rows="2" placeholder="Street, City, State, PIN" style="resize:vertical;"></textarea>
+      </div>
+
+      <button class="btn btn-primary btn-full" onclick="generateFullReport()" id="dl-btn" style="margin-top:4px;">
+        📄 Download Full PDF Report
+      </button>
+    </div>
+
+    <!-- Stats row -->
+    <div class="glass-card">
+      <div class="section-header"><span class="icon">📊</span><h3>Session Statistics</h3></div>
+      <div style="display:flex;gap:12px;" id="stats-row">
+        <div class="stat-box"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Tests Run</div></div>
+        <div class="stat-box" style="border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.06);">
+          <div class="stat-val" style="color:#f87171;" id="stat-detected">0</div>
+          <div class="stat-lbl">Risks Detected</div>
+        </div>
+        <div class="stat-box" style="border-color:rgba(16,185,129,0.2);background:rgba(16,185,129,0.06);">
+          <div class="stat-val" style="color:#34d399;" id="stat-safe">0</div>
+          <div class="stat-lbl">Clear Results</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: History + Hospital Finder -->
+  <div>
+    <!-- Prediction History -->
+    <div class="glass-card" style="margin-bottom:20px;">
+      <div class="section-header">
+        <span class="icon">🕒</span><h3>Prediction History</h3>
+        <button onclick="clearHistory()" style="margin-left:auto;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;cursor:pointer;">🗑️ Clear</button>
+      </div>
+      <div id="history-list">
+        <div style="text-align:center;padding:24px;color:#475569;font-size:13px;">
+          No predictions yet. Run a diagnostic to see history here.
+        </div>
+      </div>
+    </div>
+
+    <!-- Hospital Finder -->
+    <div class="glass-card">
+      <div class="section-header"><span class="icon">🏥</span><h3>Find Hospitals Near You</h3></div>
+      <p style="font-size:13px;color:#64748b;margin-bottom:12px;">
+        Enter your city name to find hospitals and specialists on Google Maps.
+      </p>
+
+      <div class="city-input-row">
+        <input class="form-input" id="city-input" type="text" placeholder="Enter city name, e.g. Chennai" onkeydown="if(event.key==='Enter')findHospitals()">
+        <button class="btn btn-primary" onclick="findHospitals()" style="white-space:nowrap;">🔍 Search</button>
+      </div>
+
+      <div id="hospital-results" style="margin-top:18px;display:none;">
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:10px;font-weight:600;">Quick Links for your city:</div>
+        <div id="hospital-cards"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Load history on page load ──────────────────────────────────────────────
+function loadHistory() {
+  const history = JSON.parse(localStorage.getItem('mdds_history') || '[]');
+  const container = document.getElementById('history-list');
+
+  // Stats
+  const detected = history.filter(h => h.detected).length;
+  document.getElementById('stat-total').textContent = history.length;
+  document.getElementById('stat-detected').textContent = detected;
+  document.getElementById('stat-safe').textContent = history.length - detected;
+
+  if (history.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:24px;color:#475569;font-size:13px;">No predictions yet. Run a diagnostic to see history here.</div>`;
+    return;
+  }
+  container.innerHTML = history.map((entry, i) => `
+    <div class="history-entry ${entry.detected ? 'detected' : 'safe'}">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#f1f5f9;">${entry.detected ? '⚠️' : '✅'} ${entry.disease}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">${entry.time}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:12px;font-weight:700;color:${entry.detected ? '#f87171' : '#34d399'};">${entry.result}</div>
+        <div style="font-size:11px;color:#94a3b8;">${entry.confidence}% confidence</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearHistory() {
+  if (confirm('Clear all prediction history?')) {
+    localStorage.removeItem('mdds_history');
+    loadHistory();
+    showToast('History cleared.');
+  }
+}
+
+// ── Full Report PDF ────────────────────────────────────────────────────────
+async function generateFullReport() {
+  const btn = document.getElementById('dl-btn');
+  const name = document.getElementById('p-name').value.trim() || 'Patient';
+  btn.disabled = true;
+  showLoading('Generating your PDF report…');
+  const history = JSON.parse(localStorage.getItem('mdds_history') || '[]');
+  const payload = {
+    name,
+    age:         document.getElementById('p-age').value || 'N/A',
+    gender:      document.getElementById('p-gender').value || 'N/A',
+    blood_group: document.getElementById('p-blood').value || 'N/A',
+    phone:       document.getElementById('p-phone').value || 'N/A',
+    address:     document.getElementById('p-address').value || 'N/A',
+    history
+  };
+  try {
+    const res = await fetch('/api/generate_full_report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    hideLoading();
+    if (data.pdf_b64) {
+      const link = document.createElement('a');
+      link.href = 'data:application/pdf;base64,' + data.pdf_b64;
+      link.download = `MDDS_Report_${name.replace(/\s+/g,'_')}.pdf`;
+      link.click();
+      showToast('✅ PDF report downloaded!');
+    } else {
+      showToast(data.error || 'PDF generation failed.', 'error');
+    }
+  } catch(e) {
+    hideLoading(); showToast('Error: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+}
+
+// ── Hospital Finder ────────────────────────────────────────────────────────
+function findHospitals() {
+  const city = document.getElementById('city-input').value.trim();
+  if (!city) { showToast('Please enter a city name.', 'error'); return; }
+
+  const specialties = [
+    { icon: '🫀', name: 'Cardiologist',  query: `cardiologist+hospital+${city}` },
+    { icon: '🧠', name: 'Neurologist',   query: `neurology+hospital+${city}` },
+    { icon: '🩸', name: 'Diabetologist', query: `diabetes+hospital+${city}` },
+    { icon: '🫘', name: 'Nephrologist',  query: `kidney+hospital+${city}` },
+    { icon: '🟠', name: 'Hepatologist',  query: `liver+hospital+${city}` },
+    { icon: '🏥', name: 'General Hospital', query: `hospital+${city}` },
+  ];
+
+  const cards = specialties.map(s => `
+    <div class="hospital-card">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#f1f5f9;">${s.icon} ${s.name}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">${city} hospitals & clinics</div>
+      </div>
+      <a href="https://www.google.com/maps/search/${s.query}" target="_blank">View on Maps →</a>
+    </div>
+  `).join('');
+
+  document.getElementById('hospital-cards').innerHTML = cards;
+  document.getElementById('hospital-results').style.display = 'block';
+  showToast(`🏥 Showing hospitals in ${city}!`);
+}
+
+document.addEventListener('DOMContentLoaded', loadHistory);
+</script>
+{% endblock %}

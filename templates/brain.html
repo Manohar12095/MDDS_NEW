@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Brain Tumor Detection — MDDS{% endblock %}
+{% block desc %}Deep learning MRI image analysis for brain tumor detection.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#A855F7; --secondary:#7B2FFF; --glow:rgba(168,85,247,0.3); }
+.btn-primary { background:linear-gradient(135deg,#A855F7,#7B2FFF); box-shadow:0 6px 24px rgba(168,85,247,0.35); }
+.upload-preview { display:none; text-align:center; }
+.upload-preview img { max-width:100%; max-height:280px; border-radius:12px; border:1px solid rgba(168,85,247,0.3); margin-top:12px; }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge" style="border-color:rgba(168,85,247,0.35);color:#A855F7;background:rgba(168,85,247,0.08);">🧠 Deep Learning MRI Analysis</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#A855F7,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Brain Tumor Detection</h1>
+  <p>Upload an MRI scan for AI-powered deep learning analysis</p>
+</div>
+
+<div style="max-width:860px;margin:0 auto;padding:0 24px 48px;">
+  <div class="glass-card" style="margin-bottom:24px;">
+    <div class="section-header"><span class="icon">📤</span><h3>Upload MRI Scan</h3></div>
+
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()">
+      <div class="icon">🧠</div>
+      <h3>Upload Brain MRI Image</h3>
+      <p>Click or drag & drop · JPG, JPEG, PNG · Clear MRI scans give best results</p>
+    </div>
+
+    <input type="file" id="file-input" accept=".jpg,.jpeg,.png" style="display:none;">
+
+    <div class="upload-preview" id="upload-preview">
+      <div style="margin-top:16px;padding:12px;background:rgba(168,85,247,0.08);border-radius:12px;border:1px solid rgba(168,85,247,0.2);">
+        <div style="font-size:13px;color:#94a3b8;margin-bottom:8px;">✅ Image loaded · Ready for analysis</div>
+        <img id="preview-img" src="" alt="MRI preview">
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+          <div style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:12px 24px;text-align:center;">
+            <div style="font-size:18px;font-weight:700;color:#A855F7;" id="img-w">—</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px;">WIDTH</div>
+          </div>
+          <div style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.2);border-radius:10px;padding:12px 24px;text-align:center;">
+            <div style="font-size:18px;font-weight:700;color:#A855F7;" id="img-h">—</div>
+            <div style="font-size:10px;color:#64748b;margin-top:2px;">HEIGHT</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <button class="btn btn-primary btn-full" onclick="predictBrain()" id="predict-btn" disabled>
+        🔍 Detect Brain Tumor
+      </button>
+    </div>
+  </div>
+
+  <div id="result-area" style="display:none;"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const fileInput = document.getElementById('file-input');
+const uploadZone = document.getElementById('upload-zone');
+const preview   = document.getElementById('upload-preview');
+const predictBtn= document.getElementById('predict-btn');
+let selectedFile = null;
+
+fileInput.addEventListener('change', handleFile);
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('dragover');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) { fileInput.files = e.dataTransfer.files; handleFile({target:{files:[f]}}); }
+});
+
+function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  selectedFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      document.getElementById('img-w').textContent = img.width + 'px';
+      document.getElementById('img-h').textContent = img.height + 'px';
+    };
+    img.src = ev.target.result;
+    document.getElementById('preview-img').src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  preview.style.display = 'block';
+  predictBtn.disabled = false;
+  showToast('Image uploaded successfully!');
+}
+
+async function predictBrain() {
+  if (!selectedFile) { showToast('Please upload an MRI image first.', 'error'); return; }
+  predictBtn.disabled = true;
+  showLoading('Running deep learning inference…');
+  const formData = new FormData();
+  formData.append('image', selectedFile);
+  try {
+    const res = await fetch('/api/predict/brain', { method:'POST', body: formData });
+    const data = await res.json();
+    hideLoading();
+    if (data.error) showToast(data.error, 'error');
+    else renderResult(data, document.getElementById('result-area'));
+  } catch(e) { hideLoading(); showToast('Network error: '+e.message,'error'); }
+  predictBtn.disabled = false;
+}
+</script>
+{% endblock %}

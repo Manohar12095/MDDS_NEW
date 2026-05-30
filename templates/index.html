@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block title %}MDDS — Multi-Disease Diagnostic Portal{% endblock %}
+
+{% block extra_css %}
+/* ── Mac Monitor Cards ── */
+:root {
+  --c1: #FF6B9D; --g1: rgba(255,107,157,0.2);
+  --c2: #00D4FF; --g2: rgba(0,212,255,0.2);
+  --c3: #A855F7; --g3: rgba(168,85,247,0.2);
+  --c4: #10B981; --g4: rgba(16,185,129,0.2);
+  --c5: #F59E0B; --g5: rgba(245,158,11,0.2);
+  --c6: #6366F1; --g6: rgba(99,102,241,0.2);
+}
+
+.hero { text-align:center; padding:52px 20px 32px; }
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 22px; border-radius:50px; font-size:11px; font-weight:700;
+  letter-spacing:2px; text-transform:uppercase; margin-bottom:20px;
+  background:linear-gradient(135deg,rgba(0,212,255,0.12),rgba(123,47,255,0.12));
+  border:1px solid rgba(0,212,255,0.35); color:#00D4FF;
+  animation:badgePulse 3s ease-in-out infinite;
+}
+@keyframes badgePulse {
+  0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,0.4)}
+  50%{box-shadow:0 0 0 8px rgba(0,212,255,0)}
+}
+.hero h1 {
+  font-size:clamp(36px,5vw,72px); font-weight:900; line-height:1.05;
+  background:linear-gradient(135deg,#fff 0%,#00D4FF 45%,#7B2FFF 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:6px;
+}
+
+/* Grid */
+.mac-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
+  max-width:1020px; margin:0 auto; padding:8px 24px 48px;
+}
+@media(max-width:860px){.mac-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.mac-grid{grid-template-columns:1fr;}}
+
+/* Mac card */
+.mac-card {
+  --card-color:#00D4FF; --card-color2:#7B2FFF; --card-glow:rgba(0,212,255,0.2);
+  cursor:pointer; animation:float 4s ease-in-out infinite;
+  transition:transform 0.4s cubic-bezier(0.23,1,0.32,1), filter 0.3s;
+}
+.mac-card:nth-child(2){animation-delay:-1.3s;}
+.mac-card:nth-child(3){animation-delay:-2.6s;}
+.mac-card:nth-child(4){animation-delay:-0.8s;}
+.mac-card:nth-child(5){animation-delay:-2s;}
+.mac-card:nth-child(6){animation-delay:-3.2s;}
+.mac-card:hover { transform:perspective(600px) rotateY(4deg) rotateX(-4deg) scale(1.04) translateY(-8px); }
+.mac-card:hover .mac-body { box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 8px 24px var(--card-glow), 0 0 0 1px var(--card-color) inset; }
+
+.mac-body {
+  border-radius:14px 14px 8px 8px; padding:10px 10px 0;
+  border:1.5px solid rgba(255,255,255,0.12);
+  background:linear-gradient(160deg,rgba(255,255,255,0.09),rgba(255,255,255,0.03));
+  box-shadow:0 12px 36px rgba(0,0,0,0.45),0 4px 12px var(--card-glow);
+  position:relative; overflow:hidden;
+  transition:box-shadow 0.3s ease;
+}
+.mac-body::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(160deg,rgba(255,255,255,0.04),transparent);
+  pointer-events:none;
+}
+.mac-screen {
+  border-radius:8px; overflow:hidden; position:relative;
+  background:#050d1a; border:2px solid rgba(0,0,0,0.7);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.06) inset, 0 0 20px var(--card-glow) inset;
+  min-height:110px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:16px 8px 12px;
+}
+/* CRT scanlines */
+.mac-screen::after {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.06) 3px,rgba(0,0,0,0.06) 4px);
+  pointer-events:none; z-index:10;
+  animation:scanScroll 8s linear infinite;
+}
+/* CRT vignette */
+.mac-screen::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,0.55) 100%);
+  pointer-events:none; z-index:9;
+}
+@keyframes scanScroll { 0%{background-position:0 0} 100%{background-position:0 100px} }
+
+.screen-icon {
+  font-size:44px; position:relative; z-index:11;
+  filter:drop-shadow(0 0 14px var(--card-color));
+  animation:iconPulse 3s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%,100%{filter:drop-shadow(0 0 10px var(--card-color))}
+  50%{filter:drop-shadow(0 0 24px var(--card-color))}
+}
+.screen-glow {
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:80%; height:50%;
+  background:radial-gradient(ellipse at bottom,var(--card-glow),transparent 70%);
+  z-index:8;
+}
+
+.mac-chin {
+  background:linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03));
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:7px 10px 9px; display:flex; align-items:center; justify-content:center;
+}
+.chin-dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.15); box-shadow:0 0 6px var(--card-color); }
+
+.mac-stand { display:flex; flex-direction:column; align-items:center; }
+.stand-neck { width:24px; height:12px; background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03)); border-left:1px solid rgba(255,255,255,0.06); border-right:1px solid rgba(255,255,255,0.06); }
+.stand-base { width:76px; height:7px; border-radius:0 0 7px 7px; background:linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.07); border-top:none; }
+.mac-shadow { width:84px; height:7px; border-radius:50%; background:var(--card-glow); margin:3px auto 0; filter:blur(7px); opacity:0.6; animation:shadowBreath 4s ease-in-out infinite; }
+.mac-card:nth-child(2) .mac-shadow{animation-delay:-1.3s;}
+.mac-card:nth-child(3) .mac-shadow{animation-delay:-2.6s;}
+.mac-card:nth-child(4) .mac-shadow{animation-delay:-0.8s;}
+.mac-card:nth-child(5) .mac-shadow{animation-delay:-2s;}
+.mac-card:nth-child(6) .mac-shadow{animation-delay:-3.2s;}
+@keyframes shadowBreath { 0%,100%{opacity:0.6;transform:scaleX(1)} 50%{opacity:0.25;transform:scaleX(0.7)} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+.mac-info { padding:10px 8px 6px; text-align:center; }
+.mac-title { font-size:14px; font-weight:700; color:#f1f5f9; margin-bottom:3px; }
+.mac-sub { font-size:10.5px; color:#64748b; line-height:1.4; margin-bottom:8px; }
+.mac-badge {
+  display:inline-block; padding:2px 10px; border-radius:50px;
+  font-size:8.5px; font-weight:700; letter-spacing:1.1px; text-transform:uppercase;
+  margin-bottom:8px; border:1px solid var(--card-color);
+  color:var(--card-color); background:var(--card-glow);
+}
+.mac-btn {
+  display:block; width:100%; padding:8px; border-radius:9px;
+  font-size:11px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase;
+  border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--card-color),var(--card-color2));
+  color:#fff; box-shadow:0 4px 16px var(--card-glow);
+  transition:all 0.25s ease; position:relative; overflow:hidden;
+}
+.mac-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent); opacity:0; transition:opacity 0.25s; }
+.mac-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px var(--card-glow); }
+.mac-btn:hover::after { opacity:1; }
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">🏥 AI-Powered Medical Screening</div>
+  <h1>Multi-Disease<br>Diagnostic Portal</h1>
+</div>
+
+<!-- 3×2 Mac Monitor Grid -->
+<div class="mac-grid">
+
+  <!-- Heart Disease -->
+  <div class="mac-card" onclick="location.href='/page/heart'" style="--card-color:#FF6B9D;--card-color2:#FF4757;--card-glow:rgba(255,107,157,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">❤️</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">Heart Disease</div>
+      <div class="mac-sub">13-feature cardiac risk analysis using ML</div>
+      <div class="mac-badge">13 Features</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+  <!-- Diabetes -->
+  <div class="mac-card" onclick="location.href='/page/diabetes'" style="--card-color:#00D4FF;--card-color2:#0EA5E9;--card-glow:rgba(0,212,255,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">🩸</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">Diabetes</div>
+      <div class="mac-sub">8-parameter glucose & insulin screening</div>
+      <div class="mac-badge">8 Features</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+  <!-- Brain Tumor -->
+  <div class="mac-card" onclick="location.href='/page/brain'" style="--card-color:#A855F7;--card-color2:#7B2FFF;--card-glow:rgba(168,85,247,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">🧠</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">Brain Tumor</div>
+      <div class="mac-sub">MRI image deep learning detection</div>
+      <div class="mac-badge">CNN Model</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+  <!-- Kidney Disease -->
+  <div class="mac-card" onclick="location.href='/page/kidney'" style="--card-color:#10B981;--card-color2:#06B6D4;--card-glow:rgba(16,185,129,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">🫘</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">Kidney Disease</div>
+      <div class="mac-sub">10-feature renal function analysis</div>
+      <div class="mac-badge">10 Features</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+  <!-- Liver Disease -->
+  <div class="mac-card" onclick="location.href='/page/liver'" style="--card-color:#F59E0B;--card-color2:#EF4444;--card-glow:rgba(245,158,11,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">🟠</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">Liver Disease</div>
+      <div class="mac-sub">10-marker hepatic health screening</div>
+      <div class="mac-badge">10 Markers</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+  <!-- AI Chatbot -->
+  <div class="mac-card" onclick="location.href='/page/chatbot'" style="--card-color:#6366F1;--card-color2:#8B5CF6;--card-glow:rgba(99,102,241,0.2)">
+    <div class="mac-body">
+      <div class="mac-screen">
+        <div class="screen-icon">🤖</div>
+        <div class="screen-glow"></div>
+      </div>
+      <div class="mac-chin"><div class="chin-dot"></div></div>
+    </div>
+    <div class="mac-stand"><div class="stand-neck"></div><div class="stand-base"></div></div>
+    <div class="mac-shadow"></div>
+    <div class="mac-info">
+      <div class="mac-title">AI Chatbot</div>
+      <div class="mac-sub">Conversational health screening assistant</div>
+      <div class="mac-badge">Rule-Based AI</div>
+      <button class="mac-btn">⚡ Launch</button>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

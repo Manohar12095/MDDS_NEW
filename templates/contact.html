@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block title %}Contact Us — MDDS{% endblock %}
+{% block desc %}Contact the Multi-Disease Diagnostic Portal team.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#FF6B9D; --secondary:#7B2FFF; --glow:rgba(255,107,157,0.3); }
+
+.contact-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 28px;
+max-width: 1000px;
+margin: 0 auto;
+padding: 0 24px 60px;
+}
+@media(max-width:768px){ .contact-grid{ grid-template-columns:1fr; } }
+
+.team-card {
+display: flex; align-items: center; gap: 16px;
+padding: 16px 20px; border-radius: 14px; margin-bottom: 12px;
+background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+transition: all 0.25s ease;
+}
+.team-card:hover {
+border-color: rgba(255,107,157,0.35);
+background: rgba(255,107,157,0.05);
+transform: translateX(4px);
+}
+.team-avatar {
+width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+display: flex; align-items: center; justify-content: center; font-size: 20px;
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+box-shadow: 0 0 16px var(--glow);
+}
+.team-name { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 3px; }
+.team-role { font-size: 11px; color: #64748b; }
+
+.rahonam-badge-big {
+text-align: center; padding: 28px;
+background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,47,255,0.08));
+border: 1px solid rgba(0,212,255,0.2); border-radius: 20px;
+margin-bottom: 20px;
+}
+.rahonam-badge-big .logo { font-size: 40px; margin-bottom: 10px; }
+.rahonam-badge-big h2 {
+font-size: 22px; font-weight: 900; letter-spacing: 2px;
+background: linear-gradient(135deg,#00D4FF,#7B2FFF);
+-webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.info-pill {
+display: flex; align-items: center; gap: 12px;
+padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
+background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+}
+.info-pill .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+.info-pill .value { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge" style="border-color:rgba(255,107,157,0.35);color:#FF6B9D;background:rgba(255,107,157,0.08);">
+    📬 Get In Touch</div>
+  <h1
+    style="background:linear-gradient(135deg,#fff,#FF6B9D,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+    Contact Us</h1>
+  <p style="max-width:520px;margin:0 auto;">Multi-Disease Diagnostic Portal — built with ❤️ for better health</p>
+</div>
+
+<div style="max-width:1000px;margin:0 auto;padding:0 24px 12px;">
+  <!-- Project Info Banner -->
+  <div class="glass-card" style="text-align:center;margin-bottom:28px;padding:36px;">
+    <div style="font-size:48px;margin-bottom:14px;">🏥</div>
+    <h2
+      style="font-size:26px;font-weight:900;background:linear-gradient(135deg,#fff,#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">
+      Multi-Disease Diagnostic Portal
+    </h2>
+    <p style="color:#94a3b8;font-size:14px;max-width:580px;margin:0 auto 20px;">
+      An AI-powered health screening system that helps detect Heart Disease, Diabetes, Brain Tumors, Kidney Disease, and
+      Liver Disease using Machine Learning models — free, private, and offline.
+    </p>
+    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+      <span
+        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;">❤️
+        Heart Disease</span>
+      <span
+        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;">🩸
+        Diabetes</span>
+      <span
+        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);color:#A855F7;">🧠
+        Brain Tumor</span>
+      <span
+        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10B981;">🫘
+        Kidney Disease</span>
+      <span
+        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#F59E0B;">🟠
+        Liver Disease</span>
+    </div>
+  </div>
+</div>
+
+<div class="contact-grid">
+
+  <!-- LEFT: Team + RAHONAM -->
+  <div>
+    <!-- RAHONAM -->
+    <div class="rahonam-badge-big">
+      <div class="logo">⚡</div>
+      <h2>POWERED BY RAHONAM</h2>
+      <p style="color:#94a3b8;font-size:13px;margin-top:8px;">Supported &amp; Backed by RAHONAM Organization</p>
+    </div>
+
+    <!-- Team -->
+    <div class="glass-card">
+      <div class="section-header"><span class="icon">👥</span>
+        <h3>The Team</h3>
+      </div>
+
+      <div class="team-card">
+        <div class="team-avatar">👨‍💻</div>
+        <div>
+          <div class="team-name">Manohar</div>
+          <div class="team-role">Project Lead</div>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-avatar">👩‍💻</div>
+        <div>
+          <div class="team-name">Miduna Virshni</div>
+          <div class="team-role">Tech Lead</div>
+        </div>
+      </div>
+
+      <div class="team-card">
+        <div class="team-avatar">👨‍🔬</div>
+        <div>
+          <div class="team-name">Keerthi Vaasan</div>
+          <div class="team-role">Tech Lead</div>
+        </div>
+      </div>
+
+      <div
+        style="margin-top:16px;padding:14px 18px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.18);border-radius:12px;text-align:center;">
+        <div style="font-size:11px;color:#64748b;margin-bottom:4px;">SUPPORTED BY</div>
+        <div
+          style="font-size:16px;font-weight:900;background:linear-gradient(135deg,#00D4FF,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">
+          ⚡ RAHONAM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Contact form + Info -->
+  <div>
+    <!-- Contact info pills -->
+    <div class="glass-card" style="margin-bottom:20px;">
+      <div class="section-header"><span class="icon">📞</span>
+        <h3>Contact Information</h3>
+      </div>
+
+      <div class="info-pill">
+        <span style="font-size:24px;">📧</span>
+        <div>
+          <div class="label">Email Us</div>
+          <div class="value"><a href="mailto:contact@rahonam.com"
+              style="color:#FF6B9D;text-decoration:none;">rahonamofficial@gmail.com</a></div>
+        </div>
+      </div>
+      <div class="info-pill">
+        <span style="font-size:24px;">🌐</span>
+        <div>
+          <div class="label">Organization</div>
+          <div class="value">RAHONAM</div>
+        </div>
+      </div>
+      <div class="info-pill">
+        <span style="font-size:24px;">🏥</span>
+        <div>
+          <div class="label">Project</div>
+          <div class="value">Multi-Disease Diagnostic Portal</div>
+        </div>
+      </div>
+      <div class="info-pill">
+        <span style="font-size:24px;">🤖</span>
+        <div>
+          <div class="label">AI Framework</div>
+          <div class="value">Flask · scikit-learn · TensorFlow · Vanilla JS</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

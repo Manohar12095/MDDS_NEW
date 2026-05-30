@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Liver Disease Prediction — MDDS{% endblock %}
+{% block desc %}10-marker hepatic health screening using AI.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#F59E0B; --secondary:#EF4444; --glow:rgba(245,158,11,0.3); }
+.btn-primary { background:linear-gradient(135deg,#F59E0B,#EF4444); box-shadow:0 6px 24px rgba(245,158,11,0.35); }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge" style="border-color:rgba(245,158,11,0.35);color:#F59E0B;background:rgba(245,158,11,0.08);">🟠 Hepatic Health Screening</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#F59E0B,#EF4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Liver Disease Prediction</h1>
+  <p>10-marker hepatic health screening</p>
+</div>
+
+<div class="two-col">
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">👤</span><h3>Patient Information</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">Age <span class="hint">(years)</span></label>
+      <input type="range" id="age" min="1" max="120" value="45">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="age_val">45</span><span style="font-size:11px;color:#475569;">120</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Gender</label>
+      <select id="gender"><option value="1">Male</option><option value="0">Female</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Total Bilirubin <span class="hint">(mg/dL) | Normal: 0.1-1.2</span></label>
+      <input type="range" id="total_bilirubin" min="0" max="100" value="13">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="total_bilirubin_val">1.3</span><span style="font-size:11px;color:#475569;">10.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Direct Bilirubin <span class="hint">(mg/dL) | Normal: 0-0.3</span></label>
+      <input type="range" id="direct_bilirubin" min="0" max="50" value="4">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="direct_bilirubin_val">0.4</span><span style="font-size:11px;color:#475569;">5.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Alkaline Phosphatase <span class="hint">(U/L) | Normal: 44-147</span></label>
+      <input type="range" id="alk_phos" min="50" max="2000" value="210">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">50</span><span class="range-val" id="alk_phos_val">210</span><span style="font-size:11px;color:#475569;">2000</span></div>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">🔬</span><h3>Enzyme Panel</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">ALT / SGPT <span class="hint">(U/L) | Normal: 7-56</span></label>
+      <input type="range" id="alt" min="1" max="2000" value="35">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="alt_val">35</span><span style="font-size:11px;color:#475569;">2000</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">AST / SGOT <span class="hint">(U/L) | Normal: 10-40</span></label>
+      <input type="range" id="ast" min="1" max="2000" value="40">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="ast_val">40</span><span style="font-size:11px;color:#475569;">2000</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Total Proteins <span class="hint">(g/dL) | Normal: 6.0-8.3</span></label>
+      <input type="range" id="total_proteins" min="10" max="100" value="68">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1.0</span><span class="range-val" id="total_proteins_val">6.8</span><span style="font-size:11px;color:#475569;">10.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Albumin <span class="hint">(g/dL) | Normal: 3.4-5.4</span></label>
+      <input type="range" id="albumin" min="10" max="60" value="31">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1.0</span><span class="range-val" id="albumin_val">3.1</span><span style="font-size:11px;color:#475569;">6.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Albumin/Globulin Ratio <span class="hint">| Normal: 1.1-2.5</span></label>
+      <input type="range" id="ag_ratio" min="0" max="30" value="9">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="ag_ratio_val">0.9</span><span style="font-size:11px;color:#475569;">3.0</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:400px;margin:-16px auto 32px;padding:0 24px;">
+  <button class="btn btn-primary btn-full" onclick="predictLiver()" id="predict-btn">🔍 Analyze Liver Health</button>
+</div>
+<div id="result-area" style="max-width:1100px;margin:0 auto;padding:0 24px 48px;display:none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Scaled sliders
+['total_bilirubin','direct_bilirubin','total_proteins','albumin','ag_ratio'].forEach(id => {
+  const div = 'total_bilirubin'===id||'direct_bilirubin'===id ? 10 :
+              'total_proteins'===id||'albumin'===id ? 10 :
+              'ag_ratio'===id ? 10 : 1;
+  document.getElementById(id).addEventListener('input', function(){
+    document.getElementById(id+'_val').textContent = (this.value/10).toFixed(1);
+  });
+});
+
+async function predictLiver() {
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true; showLoading('Analyzing hepatic markers…');
+  const payload = {
+    age:              document.getElementById('age').value,
+    gender:           document.getElementById('gender').value,
+    total_bilirubin:  (document.getElementById('total_bilirubin').value/10).toFixed(1),
+    direct_bilirubin: (document.getElementById('direct_bilirubin').value/10).toFixed(1),
+    alk_phos:         document.getElementById('alk_phos').value,
+    alt:              document.getElementById('alt').value,
+    ast:              document.getElementById('ast').value,
+    total_proteins:   (document.getElementById('total_proteins').value/10).toFixed(1),
+    albumin:          (document.getElementById('albumin').value/10).toFixed(1),
+    ag_ratio:         (document.getElementById('ag_ratio').value/10).toFixed(1),
+  };
+  try {
+    const res = await fetch('/api/predict/liver', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    hideLoading();
+    if (data.error) showToast(data.error,'error');
+    else renderResult(data, document.getElementById('result-area'));
+  } catch(e) { hideLoading(); showToast('Network error: '+e.message,'error'); }
+  btn.disabled = false;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,8 @@
+flask
+numpy
+scikit-learn
+tensorflow
+Pillow
+fpdf2
+gdown
+google-genai

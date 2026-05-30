@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}Heart Disease Prediction — MDDS{% endblock %}
+{% block desc %}AI-powered 13-feature cardiac risk analysis using Machine Learning.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#FF6B9D; --secondary:#FF4757; --glow:rgba(255,107,157,0.3); }
+.btn-primary { background:linear-gradient(135deg,#FF6B9D,#FF4757); box-shadow:0 6px 24px rgba(255,107,157,0.35); }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge">❤️ Cardiac Risk Screening</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#FF6B9D,#FF4757);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Heart Disease Prediction</h1>
+  <p>13-feature cardiac risk analysis using Machine Learning</p>
+</div>
+
+<div class="two-col">
+  <!-- Left column -->
+  <div class="glass-card">
+    <div class="section-header">
+      <span class="icon">👤</span><h3>Demographics</h3>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Age <span class="hint">(years)</span></label>
+      <input type="range" id="age" min="1" max="120" value="52">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="age_val">52</span><span style="font-size:11px;color:#475569;">120</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Sex</label>
+      <select id="sex"><option value="0">Female</option><option value="1" selected>Male</option></select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Chest Pain Type <span class="hint">(0=typical, 3=asymptomatic)</span></label>
+      <input type="range" id="cp" min="0" max="3" value="0">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="cp_val">0</span><span style="font-size:11px;color:#475569;">3</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Resting Blood Pressure <span class="hint">(mmHg) | Normal: 90-120</span></label>
+      <input type="range" id="trestbps" min="80" max="200" value="120">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">80</span><span class="range-val" id="trestbps_val">120</span><span style="font-size:11px;color:#475569;">200</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Cholesterol <span class="hint">(mg/dL) | Normal: &lt;200</span></label>
+      <input type="range" id="chol" min="100" max="600" value="240">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">100</span><span class="range-val" id="chol_val">240</span><span style="font-size:11px;color:#475569;">600</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Fasting Blood Sugar &gt; 120 mg/dL <span class="hint">| Normal: &lt;100 mg/dL</span></label>
+      <select id="fbs"><option value="0">No</option><option value="1">Yes</option></select>
+    </div>
+  </div>
+
+  <!-- Right column -->
+  <div class="glass-card">
+    <div class="section-header">
+      <span class="icon">🫀</span><h3>Cardiac Metrics</h3>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Resting ECG Results <span class="hint">(0–2)</span></label>
+      <input type="range" id="restecg" min="0" max="2" value="1">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="restecg_val">1</span><span style="font-size:11px;color:#475569;">2</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Max Heart Rate Achieved <span class="hint">(bpm) | Normal: 60-100 (Resting)</span></label>
+      <input type="range" id="thalach" min="60" max="250" value="150">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">60</span><span class="range-val" id="thalach_val">150</span><span style="font-size:11px;color:#475569;">250</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Exercise Induced Angina</label>
+      <select id="exang"><option value="0">No</option><option value="1">Yes</option></select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">ST Depression (Oldpeak)</label>
+      <input type="range" id="oldpeak" min="0" max="100" value="12" step="1">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="oldpeak_val">1.2</span><span style="font-size:11px;color:#475569;">10.0</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Slope of ST Segment <span class="hint">(0–2)</span></label>
+      <input type="range" id="slope" min="0" max="2" value="1">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="slope_val">1</span><span style="font-size:11px;color:#475569;">2</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Major Vessels Colored <span class="hint">(0–3)</span></label>
+      <input type="range" id="ca" min="0" max="3" value="0">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="ca_val">0</span><span style="font-size:11px;color:#475569;">3</span></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Thalassemia <span class="hint">(1=normal, 2=fixed, 3=reversible)</span></label>
+      <input type="range" id="thal" min="1" max="3" value="2">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="thal_val">2</span><span style="font-size:11px;color:#475569;">3</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Predict button -->
+<div style="max-width:400px;margin:-16px auto 32px;padding:0 24px;">
+  <button class="btn btn-primary btn-full" onclick="predictHeart()" id="predict-btn">
+    🔍 Analyze Heart Risk
+  </button>
+</div>
+
+<!-- Result area -->
+<div id="result-area" style="max-width:1100px;margin:0 auto;padding:0 24px 48px;display:none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Fix oldpeak display (stored as 0-100 int, display as 0.0-10.0)
+const oldpeakSlider = document.getElementById('oldpeak');
+const oldpeakVal = document.getElementById('oldpeak_val');
+oldpeakSlider.addEventListener('input', () => {
+  oldpeakVal.textContent = (oldpeakSlider.value / 10).toFixed(1);
+});
+
+async function predictHeart() {
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true;
+  showLoading('Running cardiac analysis…');
+  const payload = {
+    age: document.getElementById('age').value,
+    sex: document.getElementById('sex').value,
+    cp: document.getElementById('cp').value,
+    trestbps: document.getElementById('trestbps').value,
+    chol: document.getElementById('chol').value,
+    fbs: document.getElementById('fbs').value,
+    restecg: document.getElementById('restecg').value,
+    thalach: document.getElementById('thalach').value,
+    exang: document.getElementById('exang').value,
+    oldpeak: (document.getElementById('oldpeak').value / 10).toFixed(1),
+    slope: document.getElementById('slope').value,
+    ca: document.getElementById('ca').value,
+    thal: document.getElementById('thal').value,
+  };
+  try {
+    const res = await fetch('/api/predict/heart', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    hideLoading();
+    if (data.error) { showToast(data.error, 'error'); }
+    else renderResult(data, document.getElementById('result-area'));
+  } catch(e) {
+    hideLoading(); showToast('Network error: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+}
+</script>
+{% endblock %}

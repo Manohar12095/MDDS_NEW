@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Kidney Disease Prediction — MDDS{% endblock %}
+{% block desc %}10-feature chronic kidney disease screening using AI.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#10B981; --secondary:#06B6D4; --glow:rgba(16,185,129,0.3); }
+.btn-primary { background:linear-gradient(135deg,#10B981,#06B6D4); box-shadow:0 6px 24px rgba(16,185,129,0.35); }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge" style="border-color:rgba(16,185,129,0.35);color:#10B981;background:rgba(16,185,129,0.08);">🫘 Renal Function Analysis</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#10B981,#06B6D4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Kidney Disease Prediction</h1>
+  <p>10-feature chronic kidney disease screening</p>
+</div>
+
+<div class="two-col">
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">👤</span><h3>Patient Basics</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">Age <span class="hint">(years)</span></label>
+      <input type="range" id="age" min="0" max="120" value="45">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="age_val">45</span><span style="font-size:11px;color:#475569;">120</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Blood Pressure <span class="hint">(mmHg) | Normal: 90-120</span></label>
+      <input type="range" id="bp" min="0" max="200" value="80">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="bp_val">80</span><span style="font-size:11px;color:#475569;">200</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Specific Gravity <span class="hint">(urine concentration) | Normal: 1.002-1.030</span></label>
+      <input type="range" id="sg" min="1000" max="1050" value="1020">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1.000</span><span class="range-val" id="sg_val">1.020</span><span style="font-size:11px;color:#475569;">1.050</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Albumin <span class="hint">(0=none, 5=high) | Normal: 0</span></label>
+      <input type="range" id="al" min="0" max="5" value="0">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="al_val">0</span><span style="font-size:11px;color:#475569;">5</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Sugar Level in Urine <span class="hint">(0–5) | Normal: 0</span></label>
+      <input type="range" id="su" min="0" max="5" value="0">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="su_val">0</span><span style="font-size:11px;color:#475569;">5</span></div>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">🔬</span><h3>Lab Values</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">Blood Glucose Random <span class="hint">(mg/dL) | Normal: 70-140</span></label>
+      <input type="range" id="bgr" min="0" max="500" value="110">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="bgr_val">110</span><span style="font-size:11px;color:#475569;">500</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Blood Urea <span class="hint">(mg/dL) | Normal: 7-20</span></label>
+      <input type="range" id="bu" min="0" max="200" value="25">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="bu_val">25</span><span style="font-size:11px;color:#475569;">200</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Serum Creatinine <span class="hint">(mg/dL) | Normal: 0.6-1.2</span></label>
+      <input type="range" id="sc" min="0" max="200" value="10">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="sc_val">1.0</span><span style="font-size:11px;color:#475569;">20.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Hemoglobin <span class="hint">(g/dL) | Normal: 12-17</span></label>
+      <input type="range" id="hemo" min="0" max="200" value="152">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="hemo_val">15.2</span><span style="font-size:11px;color:#475569;">20.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Packed Cell Volume <span class="hint">(%) | Normal: 38-50</span></label>
+      <input type="range" id="pcv" min="0" max="60" value="44">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="pcv_val">44</span><span style="font-size:11px;color:#475569;">60</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:400px;margin:-16px auto 32px;padding:0 24px;">
+  <button class="btn btn-primary btn-full" onclick="predictKidney()" id="predict-btn">🔍 Analyze Kidney Health</button>
+</div>
+<div id="result-area" style="max-width:1100px;margin:0 auto;padding:0 24px 48px;display:none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Scaled sliders
+document.getElementById('sg').addEventListener('input', function(){
+  document.getElementById('sg_val').textContent = (this.value/1000).toFixed(3);
+});
+document.getElementById('sc').addEventListener('input', function(){
+  document.getElementById('sc_val').textContent = (this.value/10).toFixed(1);
+});
+document.getElementById('hemo').addEventListener('input', function(){
+  document.getElementById('hemo_val').textContent = (this.value/10).toFixed(1);
+});
+
+async function predictKidney() {
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true; showLoading('Analyzing renal function markers…');
+  const payload = {
+    age:  document.getElementById('age').value,
+    bp:   document.getElementById('bp').value,
+    sg:   (document.getElementById('sg').value / 1000).toFixed(3),
+    al:   document.getElementById('al').value,
+    su:   document.getElementById('su').value,
+    bgr:  document.getElementById('bgr').value,
+    bu:   document.getElementById('bu').value,
+    sc:   (document.getElementById('sc').value / 10).toFixed(1),
+    hemo: (document.getElementById('hemo').value / 10).toFixed(1),
+    pcv:  document.getElementById('pcv').value,
+  };
+  try {
+    const res = await fetch('/api/predict/kidney', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    hideLoading();
+    if (data.error) showToast(data.error,'error');
+    else renderResult(data, document.getElementById('result-area'));
+  } catch(e) { hideLoading(); showToast('Network error: '+e.message,'error'); }
+  btn.disabled = false;
+}
+</script>
+{% endblock %}

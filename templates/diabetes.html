@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Diabetes Prediction — MDDS{% endblock %}
+{% block desc %}AI-powered 8-parameter glucose and metabolic screening.{% endblock %}
+
+{% block extra_css %}
+:root { --primary:#00D4FF; --secondary:#0EA5E9; --glow:rgba(0,212,255,0.3); }
+{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-badge">🩸 Metabolic Screening</div>
+  <h1 style="background:linear-gradient(135deg,#fff,#00D4FF,#0EA5E9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Diabetes Prediction</h1>
+  <p>8-parameter glucose & metabolic screening</p>
+</div>
+
+<div class="two-col">
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">🔬</span><h3>Metabolic Panel</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">Pregnancies</label>
+      <input type="range" id="pregnancies" min="0" max="20" value="2">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="pregnancies_val">2</span><span style="font-size:11px;color:#475569;">20</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Glucose Level <span class="hint">(mg/dL) | Normal: 70-99</span></label>
+      <input type="range" id="glucose" min="0" max="300" value="120">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="glucose_val">120</span><span style="font-size:11px;color:#475569;">300</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Blood Pressure <span class="hint">(mmHg diastolic) | Normal: 60-80</span></label>
+      <input type="range" id="bp" min="0" max="200" value="70">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="bp_val">70</span><span style="font-size:11px;color:#475569;">200</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Skin Thickness <span class="hint">(mm) | Normal: 10-30</span></label>
+      <input type="range" id="skin" min="0" max="100" value="20">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="skin_val">20</span><span style="font-size:11px;color:#475569;">100</span></div>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <div class="section-header"><span class="icon">📊</span><h3>Risk Indicators</h3></div>
+
+    <div class="form-group">
+      <label class="form-label">Insulin Level <span class="hint">(µU/mL) | Normal: 16-166</span></label>
+      <input type="range" id="insulin" min="0" max="900" value="85">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0</span><span class="range-val" id="insulin_val">85</span><span style="font-size:11px;color:#475569;">900</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">BMI <span class="hint">(weight/height²) | Normal: 18.5-24.9</span></label>
+      <input type="range" id="bmi" min="0" max="700" value="285" step="1">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="bmi_val">28.5</span><span style="font-size:11px;color:#475569;">70.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Diabetes Pedigree Function <span class="hint">(family history)</span></label>
+      <input type="range" id="dpf" min="0" max="300" value="50" step="1">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">0.0</span><span class="range-val" id="dpf_val">0.50</span><span style="font-size:11px;color:#475569;">3.0</span></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Age <span class="hint">(years)</span></label>
+      <input type="range" id="age" min="1" max="120" value="32">
+      <div class="range-display"><span style="font-size:11px;color:#475569;">1</span><span class="range-val" id="age_val">32</span><span style="font-size:11px;color:#475569;">120</span></div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:400px;margin:-16px auto 32px;padding:0 24px;">
+  <button class="btn btn-primary btn-full" onclick="predictDiabetes()" id="predict-btn">🔍 Analyze Diabetes Risk</button>
+</div>
+<div id="result-area" style="max-width:1100px;margin:0 auto;padding:0 24px 48px;display:none;"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// BMI and DPF use scaled sliders
+document.getElementById('bmi').addEventListener('input', function(){
+  document.getElementById('bmi_val').textContent = (this.value/10).toFixed(1);
+});
+document.getElementById('dpf').addEventListener('input', function(){
+  document.getElementById('dpf_val').textContent = (this.value/100).toFixed(2);
+});
+
+async function predictDiabetes() {
+  const btn = document.getElementById('predict-btn');
+  btn.disabled = true; showLoading('Analyzing metabolic indicators…');
+  const payload = {
+    pregnancies: document.getElementById('pregnancies').value,
+    glucose: document.getElementById('glucose').value,
+    bp: document.getElementById('bp').value,
+    skin: document.getElementById('skin').value,
+    insulin: document.getElementById('insulin').value,
+    bmi: (document.getElementById('bmi').value / 10).toFixed(1),
+    dpf: (document.getElementById('dpf').value / 100).toFixed(2),
+    age: document.getElementById('age').value,
+  };
+  try {
+    const res = await fetch('/api/predict/diabetes', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+    });
+    const data = await res.json();
+    hideLoading();
+    if (data.error) showToast(data.error, 'error');
+    else renderResult(data, document.getElementById('result-area'));
+  } catch(e) { hideLoading(); showToast('Network error: '+e.message,'error'); }
+  btn.disabled = false;
+}
+</script>
+{% endblock %}
