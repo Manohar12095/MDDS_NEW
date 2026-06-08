@@ -9,9 +9,10 @@ from flask import Flask, request, jsonify, send_from_directory, render_template
 from datetime import datetime
 
 # ─── paths ────────────────────────────────────────────────────────────────────
+import tempfile
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
-os.makedirs(MODELS_DIR, exist_ok=True)
+# Removed top-level os.makedirs to prevent Vercel read-only filesystem errors
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
@@ -28,10 +29,18 @@ _model_cache = {}
 
 def ensure_file(filename):
     dest = os.path.join(MODELS_DIR, filename)
-    if not os.path.exists(dest) or os.path.getsize(dest) < 1024:
-        print(f"[MDDS] Downloading {filename}…")
-        gdown.download(f"https://drive.google.com/uc?export=download&id={DRIVE_IDS[filename]}", dest, quiet=False)
-    return dest
+    if os.path.exists(dest) and os.path.getsize(dest) >= 1024:
+        return dest
+        
+    tmp_dir = os.path.join(tempfile.gettempdir(), "mdds_models")
+    os.makedirs(tmp_dir, exist_ok=True)
+    tmp_dest = os.path.join(tmp_dir, filename)
+    
+    if not os.path.exists(tmp_dest) or os.path.getsize(tmp_dest) < 1024:
+        print(f"[MDDS] Downloading {filename} to {tmp_dest}…")
+        gdown.download(f"https://drive.google.com/uc?export=download&id={DRIVE_IDS[filename]}", tmp_dest, quiet=False)
+    
+    return tmp_dest
 
 def load_pickle_model(filename):
     if filename not in _model_cache:
