@@ -3,13 +3,19 @@ Flask backend for Multi-Disease Diagnostic System (MDDS)
 Replaces Streamlit entirely — pure Flask + Vanilla JS frontend.
 """
 
-import os, sys, pickle, io, base64, json, gdown
+import os, sys, pickle, io, base64, json
+import tempfile
+
+# Vercel filesystem is read-only, so we must tell gdown to use /tmp for its cache
+os.environ["HOME"] = tempfile.gettempdir()
+os.environ["XDG_CACHE_HOME"] = tempfile.gettempdir()
+
+import gdown
 import numpy as np
 from flask import Flask, request, jsonify, send_from_directory, render_template
 from datetime import datetime
 
 # ─── paths ────────────────────────────────────────────────────────────────────
-import tempfile
 BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 # Removed top-level os.makedirs to prevent Vercel read-only filesystem errors
