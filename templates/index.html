@@ -37,8 +37,8 @@
   display:grid; grid-template-columns:repeat(3,1fr); gap:28px;
   max-width:1020px; margin:0 auto; padding:8px 24px 48px;
 }
-@media(max-width:860px){.mac-grid{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:520px){.mac-grid{grid-template-columns:1fr;}}
+@media(max-width:860px){.mac-grid{grid-template-columns:repeat(2,1fr);gap:20px;}}
+@media(max-width:520px){.mac-grid{grid-template-columns:1fr;gap:16px;padding:8px 16px 32px;}}
 
 /* Mac card */
 .mac-card {
@@ -141,10 +141,32 @@
   background:linear-gradient(135deg,var(--card-color),var(--card-color2));
   color:#fff; box-shadow:0 4px 16px var(--card-glow);
   transition:all 0.25s ease; position:relative; overflow:hidden;
+  touch-action:manipulation;
 }
 .mac-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent); opacity:0; transition:opacity 0.25s; }
 .mac-btn:hover { transform:translateY(-2px); box-shadow:0 8px 28px var(--card-glow); }
 .mac-btn:hover::after { opacity:1; }
+
+/* ── Index Mobile ── */
+@media(max-width:768px) {
+  .hero { padding:28px 16px 20px; }
+  .hero h1 { font-size:clamp(28px,7vw,48px); }
+  .hero-badge { font-size:10px; padding:5px 14px; letter-spacing:1.5px; }
+  .mac-card { animation:none; }
+  .mac-card:hover { transform:scale(1.02) translateY(-4px); }
+  .mac-screen { min-height:90px; padding:12px 8px 10px; }
+  .screen-icon { font-size:36px; }
+  .mac-btn { padding:12px; font-size:12px; border-radius:10px; }
+  .mac-info { padding:8px 6px 4px; }
+  .mac-title { font-size:13px; }
+}
+@media(max-width:480px) {
+  .hero { padding:20px 12px 14px; }
+  .hero h1 { font-size:clamp(24px,8vw,36px); }
+  .mac-grid { padding:4px 12px 24px; gap:14px; }
+  .mac-screen { min-height:80px; }
+  .screen-icon { font-size:32px; }
+}
 {% endblock %}
 
 {% block content %}

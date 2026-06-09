@@ -13,7 +13,7 @@
   margin: 0 auto;
   padding: 0 24px 48px;
 }
-@media(max-width:768px){ .report-grid{ grid-template-columns:1fr; } }
+@media(max-width:768px){ .report-grid{ grid-template-columns:1fr; padding:0 16px 32px; gap:16px; } }
 
 .form-input {
   width: 100%; padding: 11px 14px; border-radius: 10px;
@@ -23,6 +23,7 @@
 }
 .form-input:focus { border-color: #00D4FF; box-shadow: 0 0 0 3px rgba(0,212,255,0.12); }
 .form-input::placeholder { color: #475569; }
+@media(max-width:768px){ .form-input { padding: 14px 14px; font-size: 15px; } }
 
 .history-entry {
   display: flex; align-items: center; justify-content: space-between;
@@ -30,36 +31,57 @@
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.03);
   animation: fadeInUp 0.3s ease;
+  gap: 12px;
 }
 .history-entry.detected { border-color: rgba(239,68,68,0.25); background: rgba(239,68,68,0.06); }
 .history-entry.safe     { border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.06); }
+@media(max-width:480px){
+  .history-entry { flex-direction: column; align-items: flex-start; padding: 14px; }
+  .history-entry > div:last-child { text-align: left; }
+}
 
 .hospital-card {
   padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
   background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.18);
   display: flex; align-items: center; justify-content: space-between;
   animation: fadeInUp 0.3s ease;
+  gap: 12px;
 }
 .hospital-card a {
   padding: 7px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
   text-decoration: none; color: #fff;
   background: linear-gradient(135deg,#00D4FF,#7B2FFF);
   transition: transform 0.2s;
+  white-space: nowrap; flex-shrink: 0;
 }
 .hospital-card a:hover { transform: translateY(-2px); }
+@media(max-width:480px){
+  .hospital-card { flex-direction: column; align-items: stretch; }
+  .hospital-card a { text-align: center; padding: 10px 16px; }
+}
 
 .city-input-row {
   display: flex; gap: 10px; margin-top: 16px;
 }
-.city-input-row input { flex:1; }
+.city-input-row input { flex:1; min-width: 0; }
+@media(max-width:480px){
+  .city-input-row { flex-direction: column; }
+  .city-input-row .btn { width: 100%; }
+}
 
 /* Stat boxes */
 .stat-box {
   background: rgba(0,212,255,0.07); border: 1px solid rgba(0,212,255,0.2);
   border-radius: 12px; padding: 16px; text-align: center; flex: 1;
+  min-width: 0;
 }
 .stat-val { font-size: 28px; font-weight: 800; color: #00D4FF; }
 .stat-lbl { font-size: 11px; color: #64748b; margin-top: 4px; }
+@media(max-width:480px){
+  .stat-val { font-size: 22px; }
+  .stat-lbl { font-size: 10px; }
+  .stat-box { padding: 12px 8px; }
+}
 
 .tab-btns { display: flex; gap: 8px; margin-bottom: 20px; }
 .tab-btn {
@@ -91,7 +113,7 @@
         <label class="form-label">Full Name</label>
         <input class="form-input" id="p-name" type="text" placeholder="e.g. Manohar Kumar">
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
         <div class="form-group">
           <label class="form-label">Age</label>
           <input class="form-input" id="p-age" type="number" min="0" max="120" placeholder="25">
@@ -104,7 +126,7 @@
           </select>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
         <div class="form-group">
           <label class="form-label">Blood Group</label>
           <select class="form-input" id="p-blood">
@@ -133,7 +155,7 @@
     <!-- Stats row -->
     <div class="glass-card">
       <div class="section-header"><span class="icon">📊</span><h3>Session Statistics</h3></div>
-      <div style="display:flex;gap:12px;" id="stats-row">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;" id="stats-row">
         <div class="stat-box"><div class="stat-val" id="stat-total">0</div><div class="stat-lbl">Tests Run</div></div>
         <div class="stat-box" style="border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.06);">
           <div class="stat-val" style="color:#f87171;" id="stat-detected">0</div>
