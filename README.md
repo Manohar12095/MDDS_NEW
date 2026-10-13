@@ -1,4 +1,4 @@
-To visit website : https://mdds-new-rnrp.vercel.app/page/contact
+To visit website : https://mdds-new-rnrp.vercel.app
 
 # 🏥 Multi-Disease Diagnostic System (MDDS)
 
