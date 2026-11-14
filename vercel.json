@@ -1,5 +1,17 @@
 {
+  "version": 2,
+  "builds": [
+    { "src": "server.py", "use": "@vercel/python" }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/server.py" }
+  ],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, immutable" }
+      ]
+    }
   ]
 }

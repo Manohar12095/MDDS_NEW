@@ -1,7 +1,12 @@
-flask
+flask>=3.0.0
 numpy
 scikit-learn
 Pillow
 fpdf2
 gdown
 google-genai
+flask-compress
+flask-limiter
+python-dotenv
+gunicorn
+requests

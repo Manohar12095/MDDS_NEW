@@ -1,195 +1,313 @@
 {% extends "base.html" %}
-{% block title %}Contact Us — MDDS{% endblock %}
-{% block desc %}Contact the Multi-Disease Diagnostic Portal team.{% endblock %}
+{% block title %}Contact — IN NET CREATIONS · MDDS{% endblock %}
+{% block desc %}Contact IN NET CREATIONS — creators of the Multi-Disease Diagnostic Portal.{% endblock %}
 
 {% block extra_css %}
-:root { --primary:#FF6B9D; --secondary:#7B2FFF; --glow:rgba(255,107,157,0.3); }
+:root { --primary:#00D4FF; --secondary:#7B2FFF; --accent:#FF6B9D; --glow:rgba(0,212,255,0.3); }
 
 .contact-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 28px;
-max-width: 1000px;
-margin: 0 auto;
-padding: 0 24px 60px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 28px; max-width: 1000px; margin: 0 auto; padding: 0 24px 60px;
 }
 @media(max-width:768px){ .contact-grid{ grid-template-columns:1fr; padding:0 16px 40px; gap:16px; } }
 
-.team-card {
-display: flex; align-items: center; gap: 16px;
-padding: 16px 20px; border-radius: 14px; margin-bottom: 12px;
-background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
-transition: all 0.25s ease;
-}
-.team-card:hover {
-border-color: rgba(255,107,157,0.35);
-background: rgba(255,107,157,0.05);
-transform: translateX(4px);
-}
-.team-avatar {
-width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-display: flex; align-items: center; justify-content: center; font-size: 20px;
-background: linear-gradient(135deg, var(--primary), var(--secondary));
-box-shadow: 0 0 16px var(--glow);
-}
-.team-name { font-size: 14px; font-weight: 700; color: #f1f5f9; margin-bottom: 3px; }
-.team-role { font-size: 11px; color: #64748b; }
-
-.rahonam-badge-big {
-text-align: center; padding: 28px;
-background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,47,255,0.08));
-border: 1px solid rgba(0,212,255,0.2); border-radius: 20px;
-margin-bottom: 20px;
-}
-.rahonam-badge-big .logo { font-size: 40px; margin-bottom: 10px; }
-.rahonam-badge-big h2 {
-font-size: 22px; font-weight: 900; letter-spacing: 2px;
-background: linear-gradient(135deg,#00D4FF,#7B2FFF);
--webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
+/* Info pills */
 .info-pill {
-display: flex; align-items: center; gap: 12px;
-padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
-background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px; border-radius: 12px; margin-bottom: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.25s ease;
 }
-.info-pill .label { font-size: 11px; color: #64748b; margin-bottom: 2px; }
+.info-pill:hover { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.04); }
+.info-pill .label { font-size: 11px; color: #64748b; margin-bottom: 2px; font-weight:600; letter-spacing:0.5px; }
 .info-pill .value { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+
+/* Creator card */
+.creator-card {
+  text-align: center; padding: 32px 28px; border-radius: 20px; margin-bottom: 20px;
+  background: linear-gradient(135deg, rgba(0,212,255,0.08), rgba(123,47,255,0.08));
+  border: 1px solid rgba(0,212,255,0.2);
+  position: relative; overflow: hidden;
+}
+.creator-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, #00D4FF, #7B2FFF, #FF6B9D);
+}
+.creator-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, #00D4FF, #7B2FFF);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin: 0 auto 16px;
+  box-shadow: 0 0 30px rgba(0,212,255,0.3);
+}
+.creator-name { font-size: 22px; font-weight: 900; color: #f1f5f9; margin-bottom: 4px; }
+.creator-role { font-size: 12px; color: #00D4FF; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+.creator-desc { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+/* IN NET CREATIONS badge */
+.inc-badge {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px; border-radius: 14px; margin-top: 16px;
+  background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.18);
+}
+.inc-logo { height: 32px; width: auto; filter: drop-shadow(0 0 8px rgba(0,212,255,0.4)); }
+.inc-name { font-size: 15px; font-weight: 900; letter-spacing: 1px;
+  background: linear-gradient(135deg, #00D4FF, #7B2FFF);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.inc-sub { font-size: 11px; color: #64748b; }
+
+/* Contact Form */
+.contact-form-group { margin-bottom: 16px; }
+.contact-form-label {
+  display: block; font-size: 11px; font-weight: 700; color: #64748b;
+  margin-bottom: 7px; letter-spacing: 1px; text-transform: uppercase;
+}
+.contact-input, .contact-textarea {
+  width: 100%; padding: 13px 16px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); color: #f1f5f9;
+  border: 1px solid rgba(255,255,255,0.1); font-size: 14px;
+  font-family: 'Inter', sans-serif; outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: none;
+}
+.contact-input:focus, .contact-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+}
+.contact-textarea { min-height: 130px; }
+
+.send-btn {
+  width: 100%; padding: 14px; border-radius: 13px;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #00D4FF, #7B2FFF);
+  color: #fff; border: none; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(0,212,255,0.3);
+  transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
+}
+.send-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(255,255,255,0.15),transparent); opacity:0; transition:opacity 0.25s; }
+.send-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 36px rgba(0,212,255,0.4); }
+.send-btn:hover::after { opacity:1; }
+.send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.form-status {
+  margin-top: 12px; padding: 12px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 600; text-align: center; display: none;
+}
+.form-status.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: #10B981; }
+.form-status.error   { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #EF4444; }
 {% endblock %}
 
 {% block content %}
 <div class="page-hero">
-  <div class="page-badge" style="border-color:rgba(255,107,157,0.35);color:#FF6B9D;background:rgba(255,107,157,0.08);">
+  <div class="page-badge" style="border-color:rgba(0,212,255,0.35);color:#00D4FF;background:rgba(0,212,255,0.08);">
     📬 Get In Touch</div>
-  <h1
-    style="background:linear-gradient(135deg,#fff,#FF6B9D,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+  <h1 style="background:linear-gradient(135deg,#fff,#00D4FF,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
     Contact Us</h1>
-  <p style="max-width:520px;margin:0 auto;">Multi-Disease Diagnostic Portal — built with ❤️ for better health</p>
+  <p style="max-width:520px;margin:0 auto;">
+    Multi-Disease Diagnostic Portal — built with ❤️ by IN NET CREATIONS
+  </p>
 </div>
 
-<div style="max-width:1000px;margin:0 auto;padding:0 24px 12px;">
-  <!-- Project Info Banner -->
-  <div class="glass-card" style="text-align:center;margin-bottom:28px;padding:36px;">
+<!-- Project Banner -->
+<div style="max-width:1000px;margin:0 auto;padding:0 24px 24px;">
+  <div class="glass-card" style="text-align:center;padding:36px;">
     <div style="font-size:48px;margin-bottom:14px;">🏥</div>
-    <h2
-      style="font-size:26px;font-weight:900;background:linear-gradient(135deg,#fff,#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">
+    <h2 style="font-size:24px;font-weight:900;background:linear-gradient(135deg,#fff,#00D4FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;">
       Multi-Disease Diagnostic Portal
     </h2>
-    <p style="color:#94a3b8;font-size:14px;max-width:580px;margin:0 auto 20px;">
-      An AI-powered health screening system that helps detect Heart Disease, Diabetes, Brain Tumors, Kidney Disease, and
-      Liver Disease using Machine Learning models — free, private, and offline.
+    <p style="color:#94a3b8;font-size:13px;max-width:560px;margin:0 auto 20px;">
+      An AI-powered health screening system detecting Heart Disease, Diabetes, Brain Tumors, Kidney & Liver Disease
+      using Machine Learning — free, private, and fast.
     </p>
-    <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
-      <span
-        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;">❤️
-        Heart Disease</span>
-      <span
-        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;">🩸
-        Diabetes</span>
-      <span
-        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);color:#A855F7;">🧠
-        Brain Tumor</span>
-      <span
-        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10B981;">🫘
-        Kidney Disease</span>
-      <span
-        style="padding:5px 16px;border-radius:50px;font-size:12px;font-weight:700;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#F59E0B;">🟠
-        Liver Disease</span>
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <span style="padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.3);color:#FF6B9D;">❤️ Heart</span>
+      <span style="padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:#00D4FF;">🩸 Diabetes</span>
+      <span style="padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);color:#A855F7;">🧠 Brain Tumor</span>
+      <span style="padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10B981;">🫘 Kidney</span>
+      <span style="padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#F59E0B;">🫀 Liver</span>
     </div>
   </div>
 </div>
 
 <div class="contact-grid">
 
-  <!-- LEFT: Team + RAHONAM -->
+  <!-- LEFT: Creator + Info -->
   <div>
-    <!-- RAHONAM -->
-    <div class="rahonam-badge-big">
-      <div class="logo">⚡</div>
-      <h2>POWERED BY RAHONAM</h2>
-      <p style="color:#94a3b8;font-size:13px;margin-top:8px;">Supported &amp; Backed by RAHONAM Organization</p>
+    <!-- Creator Card -->
+    <div class="creator-card">
+      <div class="creator-avatar">👨‍💻</div>
+      <div class="creator-name">S. Manohar</div>
+      <div class="creator-role">Full Stack AI Developer · Project Creator</div>
+      <div class="creator-desc">
+        Designed and built the entire MDDS platform — from ML models and Flask backend
+        to the animated glassmorphism UI.
+      </div>
+      <div class="inc-badge">
+        <img src="/static/img/T_logo.png" alt="IN NET CREATIONS" class="inc-logo">
+        <div>
+          <div class="inc-name">IN NET CREATIONS</div>
+          <div class="inc-sub">AI · Healthcare Technology</div>
+        </div>
+      </div>
     </div>
 
-    <!-- Team -->
+    <!-- Contact Info -->
     <div class="glass-card">
-      <div class="section-header"><span class="icon">👥</span>
-        <h3>The Team</h3>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">👨‍💻</div>
-        <div>
-          <div class="team-name">Manohar</div>
-          <div class="team-role">Project Lead</div>
-        </div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">👩‍💻</div>
-        <div>
-          <div class="team-name">Miduna Virshni</div>
-          <div class="team-role">Tech Lead</div>
-        </div>
-      </div>
-
-      <div class="team-card">
-        <div class="team-avatar">👨‍🔬</div>
-        <div>
-          <div class="team-name">Keerthi Vaasan</div>
-          <div class="team-role">Tech Lead</div>
-        </div>
-      </div>
-
-      <div
-        style="margin-top:16px;padding:14px 18px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.18);border-radius:12px;text-align:center;">
-        <div style="font-size:11px;color:#64748b;margin-bottom:4px;">SUPPORTED BY</div>
-        <div
-          style="font-size:16px;font-weight:900;background:linear-gradient(135deg,#00D4FF,#7B2FFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px;">
-          ⚡ RAHONAM</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- RIGHT: Contact form + Info -->
-  <div>
-    <!-- Contact info pills -->
-    <div class="glass-card" style="margin-bottom:20px;">
-      <div class="section-header"><span class="icon">📞</span>
-        <h3>Contact Information</h3>
-      </div>
+      <div class="section-header"><span class="icon">📞</span><h3>Contact Information</h3></div>
 
       <div class="info-pill">
-        <span style="font-size:24px;">📧</span>
+        <span style="font-size:22px;">📧</span>
         <div>
           <div class="label">Email Us</div>
-          <div class="value"><a href="mailto:contact@rahonam.com"
-              style="color:#FF6B9D;text-decoration:none;">rahonamofficial@gmail.com</a></div>
+          <div class="value"><a href="mailto:innetcreations@gmail.com" style="color:#00D4FF;text-decoration:none;">innetcreations@gmail.com</a></div>
         </div>
       </div>
       <div class="info-pill">
-        <span style="font-size:24px;">🌐</span>
+        <span style="font-size:22px;">🌐</span>
         <div>
           <div class="label">Organization</div>
-          <div class="value">RAHONAM</div>
+          <div class="value">IN NET CREATIONS</div>
         </div>
       </div>
       <div class="info-pill">
-        <span style="font-size:24px;">🏥</span>
+        <span style="font-size:22px;">🏥</span>
         <div>
           <div class="label">Project</div>
           <div class="value">Multi-Disease Diagnostic Portal</div>
         </div>
       </div>
       <div class="info-pill">
-        <span style="font-size:24px;">🤖</span>
+        <span style="font-size:22px;">🛡️</span>
         <div>
-          <div class="label">AI Framework</div>
-          <div class="value">Flask · scikit-learn · TensorFlow · Vanilla JS</div>
+          <div class="label">System</div>
+          <div class="value">AI-Assisted Diagnostic Health Screening</div>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- RIGHT: Contact Form -->
+  <div>
+    <div class="glass-card">
+      <div class="section-header"><span class="icon">✉️</span><h3>Send a Message</h3></div>
+      <p style="font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.6;">
+        Have a question or feedback? Fill in the form and we'll get back to you at <strong style="color:#f1f5f9;">innetcreations@gmail.com</strong>.
+      </p>
+
+      <form id="contact-form" novalidate>
+        <div class="contact-form-group">
+          <label class="contact-form-label" for="cf-name">Your Name *</label>
+          <input class="contact-input" id="cf-name" name="name" type="text" placeholder="S. Manohar" required>
+        </div>
+        <div class="contact-form-group">
+          <label class="contact-form-label" for="cf-email">Email Address *</label>
+          <input class="contact-input" id="cf-email" name="email" type="email" placeholder="you@example.com" required>
+        </div>
+        <div class="contact-form-group">
+          <label class="contact-form-label" for="cf-subject">Subject</label>
+          <input class="contact-input" id="cf-subject" name="subject" type="text" placeholder="Regarding MDDS...">
+        </div>
+        <div class="contact-form-group">
+          <label class="contact-form-label" for="cf-message">Message *</label>
+          <textarea class="contact-textarea" id="cf-message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+        </div>
+        <button type="submit" class="send-btn" id="send-btn">
+          <span>📨 Send Message</span>
+        </button>
+        <div class="form-status" id="form-status"></div>
+      </form>
+    </div>
   </div>
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('send-btn');
+  const status  = document.getElementById('form-status');
+  const name    = document.getElementById('cf-name').value.trim();
+  const email   = document.getElementById('cf-email').value.trim();
+  const subject = document.getElementById('cf-subject').value.trim() || 'MDDS Portal Enquiry';
+  const message = document.getElementById('cf-message').value.trim();
+
+  if (!name || !email || !message) {
+    status.textContent = '⚠️ Please fill in your Name, Email, and Message.';
+    status.className = 'form-status error';
+    status.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳ Sending to innetcreations@gmail.com…</span>';
+  status.style.display = 'none';
+
+  let sent = false;
+
+  // ── Tier 1: Send via backend endpoint (/api/contact) ─────────────────────
+  try {
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, subject, message })
+    });
+    const data = await res.json();
+    if (res.ok && data.ok) {
+      sent = true;
+      status.innerHTML = '✅ <strong>Message sent successfully!</strong> Your message has been dispatched to <strong>innetcreations@gmail.com</strong>. We will reply to your email shortly.';
+      status.className = 'form-status success';
+      status.style.display = 'block';
+      document.getElementById('contact-form').reset();
+    }
+  } catch (err) {
+    console.warn('Backend contact route failed, trying direct HTTPS email gateway...', err);
+  }
+
+  // ── Tier 2: Direct browser-to-gateway fallback (works on static hosting or serverless cold starts) ──
+  if (!sent) {
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/innetcreations@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          _subject: `[MDDS Portal] ${subject} — from ${name}`,
+          _replyto: email,
+          _template: 'table',
+          _captcha: 'false',
+          message: message
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        sent = true;
+        status.innerHTML = '✅ <strong>Message sent successfully!</strong> Delivered to <strong>innetcreations@gmail.com</strong>. We will reply to your email shortly.';
+        status.className = 'form-status success';
+        status.style.display = 'block';
+        document.getElementById('contact-form').reset();
+      }
+    } catch (err2) {
+      console.error('Direct gateway error:', err2);
+    }
+  }
+
+  // ── Tier 3: Direct Email App link fail-safe ──────────────────────────────
+  if (!sent) {
+    const mailtoUrl = `mailto:innetcreations@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('From: ' + name + ' <' + email + '>\n\n' + message)}`;
+    status.innerHTML = `⚠️ Direct delivery failed. <a href="${mailtoUrl}" style="color:#00D4FF;text-decoration:underline;font-weight:700;">Click here to send directly via your email app</a> to innetcreations@gmail.com.`;
+    status.className = 'form-status error';
+    status.style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>📨 Send Message</span>';
+});
+</script>
 {% endblock %}
